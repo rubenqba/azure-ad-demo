@@ -1,11 +1,7 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
 import Navbar from "@component/Navbar";
-import { SessionProvider } from "next-auth/react";
 import SessionProviderWrapper from "@component/SessionProviderWrapper";
-
-const inter = Inter({ subsets: ["latin"] });
+import "./globals.css";
+import "../styles/prism.css";
 
 export const metadata = {
   title: 'Next.js + Azure AD Authentication',
