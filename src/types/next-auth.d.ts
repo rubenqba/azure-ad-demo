@@ -1,23 +1,42 @@
-import NextAuth from "next-auth"
+import NextAuth from "next-auth";
+
+type PartnerInfo = {
+  id: string;
+  name: string;
+}
 
 declare module "next-auth" {
   /**
    * Returned by `useSession`, `getSession`, and received as a prop on the `SessionProvider` React Context
    */
   interface Session {
-    accessToken?: string
-    idToken?: string
+    user?: User;
+    accessToken?: string;
   }
 
   interface User {
-    accessToken?: string
-    idToken?: string
+    id: string;
+    displayName: string;
+    givenName: string;
+    familyName: string;
+    country: string;
+    partner: PartnerInfo;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    accessToken?: string
-    idToken?: string
+    user?: User;
+    accessToken?: string;
+  }
+}
+
+declare module "next-auth/providers/azure-ad-b2c" {
+  interface AzureB2CProfile {
+    given_name: string;
+    family_name: string;
+    country: string;
+    extension_PartnerID: string;
+    extension_PartnerName: string;
   }
 }

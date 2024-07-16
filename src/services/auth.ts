@@ -5,7 +5,9 @@ import type {
 } from "next";
 import type { NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
-import AzureADB2CProvider, { AzureB2CProfile } from "next-auth/providers/azure-ad-b2c";
+import AzureADB2CProvider, {
+  AzureB2CProfile,
+} from "next-auth/providers/azure-ad-b2c";
 import { OAuthUserConfig } from "next-auth/providers/oauth";
 
 const azureOpts: OAuthUserConfig<AzureB2CProfile> & {
@@ -17,15 +19,22 @@ const azureOpts: OAuthUserConfig<AzureB2CProfile> & {
   clientId: process.env.AZURE_AD_B2C_CLIENT_ID!,
   clientSecret: process.env.AZURE_AD_B2C_CLIENT_SECRET!,
   primaryUserFlow: process.env.AZURE_AD_B2C_PRIMARY_USER_FLOW!,
-  profileUrl: "https://graph.microsoft.com/oidc/userinfo",
   profile: (profile, tokens) => {
     console.log("THE PROFILE", profile);
 
     return {
       id: profile.oid,
-      name: profile.name,
+      displayName: [profile.given_name, profile.family_name]
+        .filter((t) => t && t.length > 0)
+        .join(" "),
+      givenName: profile.given_name,
+      familyName: profile.family_name,
       country: profile.country,
       email: profile.emails.length > 0 ? profile.emails[0] : null,
+      partner: {
+        id: profile.extension_PartnerID ?? null,
+        name: profile.extension_PartnerName ?? null,
+      },
     };
   },
   authorization: {
@@ -40,16 +49,23 @@ const azureOpts: OAuthUserConfig<AzureB2CProfile> & {
 export const config = {
   providers: [AzureADB2CProvider(azureOpts)],
   callbacks: {
-    async jwt({ token, account }) {
-      if (account) {
-        token.accessToken = account.access_token;
-        token.idToken = account.id_token;
+    async jwt({ token, user, account, profile, session, trigger }) {
+      if (account?.access_token) {
+        token.accessToken = account?.access_token;
       }
+      if (profile) {
+        token.user = user;
+      }
+
       return token;
     },
-    async session({ session, token }) {
-      session.accessToken = token.accessToken;
-      session.idToken = token.idToken;
+    async session({ session, token, user }) {
+      if (token.accessToken) {
+        session.accessToken = token.accessToken;
+      }
+      if (token.user) {
+        session.user = token.user;
+      }
       return session;
     },
   },

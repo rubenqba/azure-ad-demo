@@ -1,21 +1,31 @@
-import React from 'react'
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React from "react";
 
 type LogoutButtonProps = {
   tenant: string;
   flowName: string;
   redirectUrl: string;
   className?: string;
-}
-const LogoutButton = ({ tenant, flowName, redirectUrl, className }: Readonly<LogoutButtonProps>) => {
+};
+const LogoutButton = ({
+  tenant,
+  flowName,
+  redirectUrl,
+  className,
+}: Readonly<LogoutButtonProps>) => {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/api/logout");
+  };
+
   return (
     <div className={className}>
-      <a
-        href={`https://${tenant}.b2clogin.com/${tenant}.onmicrosoft.com/${flowName}/oauth2/v2.0/logout?post_logout_redirect_uri=${redirectUrl}/auth/signout`}
-      >
-        <button className="text-white">Logout</button>
-      </a>
+      <button onClick={handleLogout} className="text-white">Logout</button>
     </div>
   );
-}
+};
 
-export default LogoutButton
+export default LogoutButton;

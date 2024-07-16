@@ -16,28 +16,25 @@ const Navbar: React.FC = () => {
           <a href="/me" className="ml-4 text-white">
             Profile
           </a>
+          <a href="/graph" className="ml-4 text-white">
+            Graph Data
+          </a>
           <a href="/data" className="ml-4 text-white">
-            Data
+            API Call
           </a>
         </div>
         <div>
           {session ? (
             <>
               <span className="text-white mr-4">
-                Hello, {session.user?.name}
+                Hello, {session.user?.displayName}
               </span>
-              {/* {process.env.ZURE_AD_B2C_TENANT_NAME ? ( */}
                 <LogoutButton
                   tenant="dardeus3"
                   flowName="B2C_1_ONE"
                   redirectUrl="http://localhost:3000"
                   className="inline-block"
                 />
-              {/* ) : (
-                <button onClick={() => signOut()} className="text-white">
-                  Logout
-                </button>
-              )} */}
             </>
           ) : (
             <button onClick={() => signIn()} className="text-white">

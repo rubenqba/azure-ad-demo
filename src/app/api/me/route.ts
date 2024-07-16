@@ -5,16 +5,27 @@ export async function GET(req: Request) {
   const session = await auth();
 
   try {
-    const res = await fetch("http://localhost:8080/users/me", {
-      headers: {
-        Authorization: `Bearer ${session?.accessToken}`,
-      },
-    });
-    const data = await res.json();
-    console.log("data:", data);
-    return NextResponse.json(data);
-  } catch (error) {
+    const accessToken = session?.accessToken;
+    if (accessToken) {
+      const res = await fetch("http://host.local:8080/users/me", {
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+          Accept: "application/json"
+        },
+      });
+      if (!res.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+      const data = await res.json();
+      console.log("data:", data);
+      return NextResponse.json(data);
+    }
+    throw new Error("No access token found");
+  } catch (error: Error | unknown) {
     console.error(error);
-    return NextResponse.json({ error: error }, { status: 400 });
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    return NextResponse.json({ error: error }, { status: 500 });
   }
 }
