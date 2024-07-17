@@ -23,14 +23,14 @@ const azureOpts: OAuthUserConfig<AzureB2CProfile> & {
     console.log("THE PROFILE", profile);
 
     return {
-      id: profile.oid,
-      displayName: [profile.given_name, profile.family_name]
+      id: profile.oid ?? profile.sub,
+      displayName: profile.name ?? [profile.given_name, profile.family_name]
         .filter((t) => t && t.length > 0)
         .join(" "),
       givenName: profile.given_name,
       familyName: profile.family_name,
       country: profile.country,
-      email: profile.emails.length > 0 ? profile.emails[0] : null,
+      email: profile.emails?.length > 0 ? profile.emails[0] : null,
       partner: {
         id: profile.extension_PartnerID ?? null,
         name: profile.extension_PartnerName ?? null,
