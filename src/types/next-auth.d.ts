@@ -1,9 +1,9 @@
 import NextAuth from "next-auth";
 
 type PartnerInfo = {
-  id: string;
-  name: string;
-  subscription: string;
+  id: string | null;
+  name: string | null;
+  subscription: string | null;
   roles: string[];
 }
 

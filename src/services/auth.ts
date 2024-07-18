@@ -9,6 +9,7 @@ import AzureADB2CProvider, {
   AzureB2CProfile,
 } from "next-auth/providers/azure-ad-b2c";
 import { OAuthUserConfig } from "next-auth/providers/oauth";
+import { PartnerInfo } from "../types/next-auth";
 
 const azureOpts: OAuthUserConfig<AzureB2CProfile> & {
   primaryUserFlow?: string;
@@ -22,6 +23,13 @@ const azureOpts: OAuthUserConfig<AzureB2CProfile> & {
   profile: (profile, tokens) => {
     console.log("THE PROFILE", profile);
 
+    const partner: PartnerInfo = {
+      id: profile.extension_PartnerID ?? null,
+      name: profile.extension_PartnerName ?? null,
+      subscription: profile.extension_SubscriptionType ?? null,
+      roles: profile.extension_PartnerRole?.split(',') ?? [],
+    };
+
     return {
       id: profile.oid ?? profile.sub,
       displayName: profile.name ?? [profile.given_name, profile.family_name]
@@ -31,12 +39,7 @@ const azureOpts: OAuthUserConfig<AzureB2CProfile> & {
       familyName: profile.family_name,
       country: profile.country,
       email: profile.emails?.length > 0 ? profile.emails[0] : null,
-      partner: {
-        id: profile.extension_PartnerID ?? null,
-        name: profile.extension_PartnerName ?? null,
-        subscription: profile.extension_SubscriptionType ?? null,
-        roles: profile.extension_PartnerRole?.split(',') ?? [],
-      },
+      partner,
     };
   },
   authorization: {
