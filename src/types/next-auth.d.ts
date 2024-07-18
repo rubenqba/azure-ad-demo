@@ -3,6 +3,8 @@ import NextAuth from "next-auth";
 type PartnerInfo = {
   id: string;
   name: string;
+  subscription: string;
+  roles: string[];
 }
 
 declare module "next-auth" {
@@ -36,7 +38,9 @@ declare module "next-auth/providers/azure-ad-b2c" {
     given_name: string;
     family_name: string;
     country: string;
-    extension_PartnerID: string;
-    extension_PartnerName: string;
+    extension_PartnerID?: string;
+    extension_PartnerName?: string;
+    extension_SubscriptionType?: string;
+    extension_PartnerRole?: string;
   }
 }

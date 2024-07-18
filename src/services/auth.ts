@@ -34,6 +34,8 @@ const azureOpts: OAuthUserConfig<AzureB2CProfile> & {
       partner: {
         id: profile.extension_PartnerID ?? null,
         name: profile.extension_PartnerName ?? null,
+        subscription: profile.extension_SubscriptionType ?? null,
+        roles: profile.extension_PartnerRole?.split(',') ?? [],
       },
     };
   },
