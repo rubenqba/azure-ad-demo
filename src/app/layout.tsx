@@ -4,6 +4,9 @@ import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import "./globals.css";
 import "../styles/prism.css";
+import { config } from '@fortawesome/fontawesome-svg-core'
+import '@fortawesome/fontawesome-svg-core/styles.css'
+config.autoAddCss = false
 
 export const metadata = {
   title: "Next.js + Azure AD Authentication",

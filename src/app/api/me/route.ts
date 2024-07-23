@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   try {
     const accessToken = session?.accessToken;
     if (accessToken) {
-      const res = await fetch("http://host.local:8080/users/me", {
+      const res = await fetch("http://host.local:8080/protected_flow/campaign1", {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
           Accept: "application/json"
