@@ -1,6 +1,6 @@
+"use client";
 import React, { useEffect } from "react";
 import Prism from "prismjs";
-
 
 require("prismjs/components/prism-json");
 
@@ -11,7 +11,11 @@ type TextCodeProps = {
 };
 
 const TextCode = (
-  { code, language, className }: TextCodeProps = { code: "", language: "", className: "" }
+  { code, language, className }: TextCodeProps = {
+    code: "",
+    language: "",
+    className: "",
+  }
 ) => {
   useEffect(() => {
     Prism.highlightAll();
@@ -19,7 +23,7 @@ const TextCode = (
 
   return (
     <div className={className}>
-      <pre>
+      <pre className={`language-${language}`}>
         <code className={`language-${language}`}>{code}</code>
       </pre>
     </div>

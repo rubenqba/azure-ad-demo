@@ -1,8 +1,6 @@
-"use client";
 import { signOut } from "next-auth/react";
 
-export default function SignoutPage() {
-  signOut({ callbackUrl: "http://localhost:3000" });
+export default async function SignoutPage() {
   return (
     <div>
       <h1>Signing out...</h1>

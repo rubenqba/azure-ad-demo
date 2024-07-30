@@ -1,9 +1,8 @@
-"use client";
-import { useSession } from "next-auth/react";
+'use client'
 import React from "react";
-import ShowToken from "./ShowToken";
 import TextCode from "./TextCode";
 import JWTDisplay from "./JWTDisplay";
+import { useSession } from "next-auth/react";
 
 const UserInformation = () => {
   const { data: session } = useSession();

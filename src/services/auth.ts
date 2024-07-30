@@ -10,47 +10,52 @@ import AzureADB2CProvider, {
 } from "next-auth/providers/azure-ad-b2c";
 import { OAuthUserConfig } from "next-auth/providers/oauth";
 import { PartnerInfo } from "../types/next-auth";
+import environment, { Config } from "@lib/environment";
 
-const azureOpts: OAuthUserConfig<AzureB2CProfile> & {
-  primaryUserFlow?: string;
-  tenantId?: string;
-} = {
-  name: "DARDEUS",
-  tenantId: process.env.AZURE_AD_B2C_TENANT_NAME,
-  clientId: process.env.AZURE_AD_B2C_CLIENT_ID!,
-  clientSecret: process.env.AZURE_AD_B2C_CLIENT_SECRET!,
-  primaryUserFlow: process.env.AZURE_AD_B2C_PRIMARY_USER_FLOW!,
-  profile: (profile, tokens) => {
-    console.log("THE PROFILE", profile);
+function buildAzureADB2CConfig(config: Config) {
+  const opts: OAuthUserConfig<AzureB2CProfile> & {
+    primaryUserFlow?: string;
+    tenantId?: string;
+  } = {
+    name: "DARDEUS",
+    tenantId: config.AZURE_AD_B2C_TENANT_NAME,
+    clientId: config.AZURE_AD_B2C_CLIENT_ID,
+    clientSecret: config.AZURE_AD_B2C_CLIENT_SECRET,
+    primaryUserFlow: config.AZURE_AD_B2C_PRIMARY_USER_FLOW,
+    profile: (profile, tokens) => {
+      console.log("THE PROFILE", profile);
 
-    const partner: PartnerInfo = {
-      id: profile.extension_PartnerID ?? null,
-      name: profile.extension_PartnerName ?? null,
-      subscription: profile.extension_SubscriptionType ?? null,
-      roles: profile.extension_PartnerRole?.split(',') ?? [],
-    };
+      const partner: PartnerInfo = {
+        id: profile.extension_PartnerID ?? null,
+        name: profile.extension_PartnerName ?? null,
+        subscription: profile.extension_SubscriptionType ?? null,
+        roles: profile.extension_PartnerRole?.split(",") ?? [],
+      };
 
-    return {
-      id: profile.oid ?? profile.sub,
-      displayName: profile.name ?? [profile.given_name, profile.family_name]
-        .filter((t) => t && t.length > 0)
-        .join(" "),
-      givenName: profile.given_name,
-      familyName: profile.family_name,
-      country: profile.country,
-      email: profile.emails?.length > 0 ? profile.emails[0] : null,
-      partner,
-    };
-  },
-  authorization: {
-    params: {
-      scope: `https://${process.env.AZURE_AD_B2C_TENANT_NAME}.onmicrosoft.com/${process.env.WEB_API_NAME}/Read https://${process.env.AZURE_AD_B2C_TENANT_NAME}.onmicrosoft.com/${process.env.WEB_API_NAME}/Write openid profile email`,
+      return {
+        id: profile.oid ?? profile.sub,
+        displayName:
+          profile.name ??
+          [profile.given_name, profile.family_name]
+            .filter((t) => t && t.length > 0)
+            .join(" "),
+        givenName: profile.given_name,
+        familyName: profile.family_name,
+        country: profile.country,
+        email: profile.emails?.length > 0 ? profile.emails[0] : null,
+        partner,
+      };
     },
-  },
-};
+    authorization: {
+      params: {
+        scope: `https://${config.AZURE_AD_B2C_TENANT_NAME}.onmicrosoft.com/${config.AZURE_AD_B2C_AUDIENCE}/Read https://${config.AZURE_AD_B2C_TENANT_NAME}.onmicrosoft.com/${config.AZURE_AD_B2C_AUDIENCE}/Write openid profile email`,
+      },
+    },
+  };
+  return opts;
+}
+const azureOpts = buildAzureADB2CConfig(environment);
 
-// You'll need to import and pass this
-// to `NextAuth` in `app/api/auth/[...nextauth]/route.ts`
 export const config = {
   providers: [AzureADB2CProvider(azureOpts)],
   callbacks: {
