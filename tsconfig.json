@@ -20,6 +20,8 @@
     "paths": {
       "@component/*": ["./src/components/*"],
       "@service/*": ["./src/services/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@action/*": ["./src/actions/*"],
     },
     "typeRoots": ["./src/types", ".node_modules/@types"]
   },
