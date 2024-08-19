@@ -4,7 +4,7 @@ import TextCode from "./TextCode";
 import JWTDisplay from "./JWTDisplay";
 import { useSession } from "next-auth/react";
 
-const UserInformation = () => {
+const TokenInformation = () => {
   const { data: session } = useSession();
   return session ? (
     <div>
@@ -25,4 +25,4 @@ const UserInformation = () => {
   );
 };
 
-export default UserInformation;
+export default TokenInformation;

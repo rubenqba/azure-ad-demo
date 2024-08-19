@@ -48,7 +48,7 @@ function buildAzureADB2CConfig(config: Config) {
     },
     authorization: {
       params: {
-        scope: `https://${config.AZURE_AD_B2C_TENANT_NAME}.onmicrosoft.com/${config.AZURE_AD_B2C_AUDIENCE}/Read https://${config.AZURE_AD_B2C_TENANT_NAME}.onmicrosoft.com/${config.AZURE_AD_B2C_AUDIENCE}/Write openid profile email`,
+        scope: `${config.AZURE_AD_B2C_AUDIENCE}/Read ${config.AZURE_AD_B2C_AUDIENCE}/Write openid`,
       },
     },
   };
