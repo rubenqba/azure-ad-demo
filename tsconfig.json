@@ -18,6 +18,7 @@
       }
     ],
     "paths": {
+      "@model/*": ["./src/models/*"],
       "@component/*": ["./src/components/*"],
       "@service/*": ["./src/services/*"],
       "@lib/*": ["./src/lib/*"],

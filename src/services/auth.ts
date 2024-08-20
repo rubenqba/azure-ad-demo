@@ -24,6 +24,7 @@ function buildAzureADB2CConfig(config: Config) {
     primaryUserFlow: config.AZURE_AD_B2C_PRIMARY_USER_FLOW,
     profile: (profile, tokens) => {
       console.log("THE PROFILE", profile);
+      console.debug("THE TOKENS", tokens);
 
       const partner: PartnerInfo = {
         id: profile.extension_PartnerID ?? null,
@@ -62,8 +63,9 @@ export const config = {
     async jwt({ token, user, account, profile, session, trigger }) {
       if (account?.access_token) {
         token.accessToken = account?.access_token;
+        token.idToken = account?.id_token;
       }
-      if (profile) {
+      if (user) {
         token.user = user;
       }
 
@@ -72,6 +74,9 @@ export const config = {
     async session({ session, token, user }) {
       if (token.accessToken) {
         session.accessToken = token.accessToken;
+      }
+      if (token.idToken) {
+        session.idToken = token.idToken;
       }
       if (token.user) {
         session.user = token.user;

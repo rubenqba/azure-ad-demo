@@ -1,6 +1,7 @@
 "use server";
 
 import environment from "@lib/environment";
+import { parseWWWAuthenticateHeader } from "@lib/utils";
 import { auth } from "@service/auth";
 
 export async function getProfile() {
@@ -67,20 +68,4 @@ export async function deleteCurrentProfile() {
       );
     return JSON.stringify(error, null, 2);
   }
-}
-
-// process WWW-Authenticate header response and return a dictionary
-export async function parseWWWAuthenticateHeader(
-  header?: string | null
-): Promise<Record<string, string>> {
-  if (header) {
-    const result: Record<string, string> = {};
-    const parts = header.substring(7).split(", ");
-    for (const part of parts) {
-      const [key, value] = part.split("=");
-      result[key] = value.replaceAll('"', "");
-    }
-    return Promise.resolve(result);
-  }
-  return Promise.resolve({});
 }
