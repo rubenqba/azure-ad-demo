@@ -5,12 +5,11 @@ import type {
 } from "next";
 import type { NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
-import AzureADB2CProvider, {
-  AzureB2CProfile,
-} from "next-auth/providers/azure-ad-b2c";
+import AzureADB2C, { AzureB2CProfile } from "next-auth/providers/azure-ad-b2c";
 import { OAuthUserConfig } from "next-auth/providers/oauth";
 import { PartnerInfo } from "../types/next-auth";
 import environment, { Config } from "@lib/environment";
+import { refreshAccessToken } from "@lib/utils";
 
 function buildAzureADB2CConfig(config: Config) {
   const opts: OAuthUserConfig<AzureB2CProfile> & {
@@ -57,31 +56,34 @@ function buildAzureADB2CConfig(config: Config) {
 }
 const azureOpts = buildAzureADB2CConfig(environment);
 
-export const config = {
-  providers: [AzureADB2CProvider(azureOpts)],
+export const config: NextAuthOptions = {
+  providers: [AzureADB2C(azureOpts)],
   callbacks: {
     async jwt({ token, user, account, profile, session, trigger }) {
-      if (account?.access_token) {
-        token.accessToken = account?.access_token;
-        token.idToken = account?.id_token;
-      }
-      if (user) {
+      if (account && user) {
         token.user = user;
+        token.accessToken = account.access_token;
+        token.expires = account.expires_at ?? 0;
+        token.refreshToken = account.refresh_token;
+        return token;
       }
 
-      return token;
+      console.log("JWT expires: ", token.expires);
+      if (Date.now() < token.expires * 1000) {
+        return token;
+      }
+
+      return await refreshAccessToken(token, environment);
     },
     async session({ session, token, user }) {
-      if (token.accessToken) {
-        session.accessToken = token.accessToken;
+      const newSession = session;
+      if (token.accessToken && session.accessToken !== token.accessToken) {
+        newSession.user = token.user;
+        newSession.accessToken = token.accessToken;
+        newSession.expires = new Date(token.expires * 1000).toISOString();
       }
-      if (token.idToken) {
-        session.idToken = token.idToken;
-      }
-      if (token.user) {
-        session.user = token.user;
-      }
-      return session;
+      // console.debug(newSession);
+      return newSession;
     },
   },
   debug: true,

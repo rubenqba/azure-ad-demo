@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Team } from "./teams";
 
 export const StatusColorMap: Record<string, "success" | "danger" | "warning" | "default" | "primary" | "secondary"> = {
   buyer: "success",
@@ -11,9 +12,9 @@ export type Client = {
   firstName: string;
   lastName: string;
   email: string;
-  team?: string;
+  team?: Team;
   avatar?: string;
-  role?: string[];
+  roles: string[];
 };
 
 export const clientValidator = z.object({

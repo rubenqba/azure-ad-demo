@@ -19,10 +19,6 @@ const TokenInformation = () => {
         <strong>Access Token:</strong>
         <JWTDisplay token={session.accessToken} />
       </div>
-      <div className="flex flex-col mt-4">
-        <strong>ID Token:</strong>
-        <JWTDisplay token={session.idToken} />
-      </div>
     </div>
   ) : (
     <p>Please log in to see your profile.</p>

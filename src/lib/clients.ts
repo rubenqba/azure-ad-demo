@@ -2,12 +2,13 @@ import { auth } from "@service/auth";
 import environment from "@lib/environment";
 import { parseWWWAuthenticateHeader } from "@lib/utils";
 import { Client } from "@model/users";
+import { revalidatePath } from "next/cache";
 
 export async function getClients() {
   try {
     const session = await auth();
     if (session) {
-      const url = `${environment.BACKEND_API_URL}/clients`;
+      const url = `${environment.BACKEND_API_URL}/users`;
       console.debug(session);
       const res = await fetch(url, {
         headers: {
@@ -18,6 +19,7 @@ export async function getClients() {
       if (res.ok) {
         const data: Client[] = await res.json();
         console.debug(data);
+        revalidatePath("/clients");
         return { data, error: null };
       }
       const error = await parseWWWAuthenticateHeader(
@@ -30,6 +32,7 @@ export async function getClients() {
     }
     throw new Error(`Authentication error: missing token`);
   } catch (error) {
+    revalidatePath("/clients");
     return { error, data: null };
   }
 }

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Chip,
@@ -9,14 +9,13 @@ import {
   TableHeader,
   TableRow,
   Tooltip,
-  useDisclosure,
   User,
 } from "@nextui-org/react";
-import React, { Key, useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Client, StatusColorMap } from "@model/users";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
-import ClientEditModal from "./ClientEditModal";
+import UserAvatar from "@component/UserAvatar";
 
 type UserTableProps = {
   headerTitle: string;
@@ -35,36 +34,27 @@ const columns = [
 ];
 
 const ClientsTable = ({ clients, headerTitle }: Readonly<UserTableProps>) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [toEdit, setToEdit] = useState<Client>();
   const renderCell = useCallback(
     (user: IndexableClient, columnKey: string | number) => {
       switch (columnKey) {
         case "name":
           return (
-            <User
-              avatarProps={{
-                radius: "lg",
-                src: `https://i.pravatar.cc/150?u=${user.email}`,
-              }}
-              description={user.email}
-              name={`${user.firstName} ${user.lastName}`}
-            >
-              {user.email}
-            </User>
+            <UserAvatar
+              displayName={`${user.firstName} ${user.lastName}`}
+              email={user.email}
+            />
           );
         case "team":
           return (
             <div className="flex flex-col">
-              <p className="text-bold text-sm capitalize">{user.team}</p>
-              <p className="text-bold text-sm capitalize text-default-400">
-                {user.team}
+              <p className="text-bold text-sm capitalize">{user.team?.name}</p>
+              <p className="text-bold text-sm text-default-400">
+                {user.team?.subscription}
               </p>
             </div>
           );
         case "status":
-          const roles = user.role ?? [];
-          return roles.map((role) => (
+          return user.roles.map((role) => (
             <Chip
               className="capitalize"
               color={StatusColorMap[role]}
@@ -102,28 +92,13 @@ const ClientsTable = ({ clients, headerTitle }: Readonly<UserTableProps>) => {
     []
   );
 
-  const editClient = (key: Key) => {
-    setToEdit(clients.find(c => c.id === key))
-    onOpen();
-  };
-
   return (
     <section>
       <h1>{headerTitle}</h1>
-      <Table
-        aria-label="Client list"
-        // selectionMode="multiple"
-        // selectionBehavior="toggle"
-        onRowAction={editClient}
-      >
+      <Table aria-label="Client list">
         <TableHeader columns={columns}>
           {(column) => (
-            <TableColumn
-              key={column.uid}
-              align={column.uid === "actions" ? "center" : "start"}
-            >
-              {column.name}
-            </TableColumn>
+            <TableColumn key={column.uid}>{column.name}</TableColumn>
           )}
         </TableHeader>
         <TableBody emptyContent={"No clients to display."} items={clients}>
@@ -136,7 +111,6 @@ const ClientsTable = ({ clients, headerTitle }: Readonly<UserTableProps>) => {
           )}
         </TableBody>
       </Table>
-      <ClientEditModal isOpen={isOpen} onChange={onOpenChange} client={toEdit} />
     </section>
   );
 };
