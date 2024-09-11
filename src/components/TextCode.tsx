@@ -1,8 +1,4 @@
-"use client";
-import React, { useEffect } from "react";
-import Prism from "prismjs";
-
-require("prismjs/components/prism-json");
+import PrismLoader from "@component/PrismLoader";
 
 type TextCodeProps = {
   code: string;
@@ -10,24 +6,19 @@ type TextCodeProps = {
   className?: string;
 };
 
-const TextCode = (
-  { code, language, className }: TextCodeProps = {
+export default function TextCode(
+  { code, language, className }: Readonly<TextCodeProps> = {
     code: "",
     language: "",
     className: "",
   }
-) => {
-  useEffect(() => {
-    Prism.highlightAll();
-  }, []);
-
+) {
   return (
     <div className={className}>
       <pre className={`language-${language}`}>
         <code className={`language-${language}`}>{code}</code>
       </pre>
+      <PrismLoader />
     </div>
   );
 };
-
-export default TextCode;

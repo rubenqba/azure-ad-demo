@@ -1,5 +1,5 @@
 "use client";
-import { deleteCurrentProfile, getProfile } from "@action/profile";
+import { deleteCurrentProfile, getAzureEndpoint } from "@action/profile";
 import TextCode from "@component/TextCode";
 import { Suspense, useState, useTransition } from "react";
 
@@ -16,7 +16,7 @@ export default function DataPage() {
             <button
               onClick={() => {
                 startTransition(async () => {
-                  const data = await getProfile();
+                  const data = await getAzureEndpoint();
                   console.debug(data)
                   setData(data);
                 });
@@ -24,7 +24,7 @@ export default function DataPage() {
               className="mt-4 bg-blue-500 text-white px-4 py-2"
               disabled={isPending}
             >
-              Fetch Data
+              Fetch Data {isPending ? "..." : ""}
             </button>
             <button
               onClick={() => {
